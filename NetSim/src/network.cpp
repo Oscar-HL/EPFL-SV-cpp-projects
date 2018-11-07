@@ -3,6 +3,7 @@
 #include <functional>
 #include <iterator>
 #include <iostream>
+#include <utility>
 #include "random.h"
 
 //Resizes the list of nodes
@@ -21,7 +22,7 @@ void Network::resize(const size_t& nodes) {
 		} 
 		else if (values.size()< nodes) {
 			for(size_t i(values.size()); i<nodes; i++) {
-				values.push_back(RNG.uniform_double());
+				values.push_back(RNG.normal());
 			}
 		}
 		else if(values.size()>nodes) {
@@ -69,7 +70,8 @@ size_t Network::random_connect(const double& mean_deg) {
 	
 	size_t nLinks(0);
 	links.clear();
-	std::vector<int> nodes(values.size());
+	std::vector<size_t> nodes(values.size());
+	for(size_t i(0) ; i <nodes.size() ; i++) nodes[i]=i;
 	std::vector<int> degrees(values.size());
 	RNG.poisson(degrees, mean_deg);
 	
@@ -77,7 +79,7 @@ size_t Network::random_connect(const double& mean_deg) {
 	size_t degree(degrees[i]);
 	if(degree > nodes.size()) degree = nodes.size();
 			for(size_t j(0) ; j < degree ; j++)  {
-				RNG.uniform_int(nodes, 0, values.size());
+				RNG.shuffle(nodes);
 				if(add_link(i,nodes[j]))  { nLinks++;}
 				else if(degree < nodes.size()) degree++;
 			}
@@ -107,7 +109,7 @@ size_t Network::set_values(const std::vector<double>& n_val) {
 		
 	}
 	
-	else if(n_val.size()<values.size()) {
+	else {
 		for(size_t i(0); i<n_val.size(); i++) {
 			values[i]=n_val[i];
 		}
